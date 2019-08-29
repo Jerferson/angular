@@ -7,7 +7,6 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MyComponentComponent implements OnInit {
 
-  myButton = 'OK 1';
   constructor() { }
 
   ngOnInit() {
