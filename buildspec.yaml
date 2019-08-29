@@ -1,24 +1,26 @@
 version: 0.2
-
+env:
+  variables:
+    S3_BUCKET: "codepipeline-us-east-2-652687055674"
 phases:
   install:
-    commands:
-      # Update libs
-      - echo 1111111s...
-      - apt-get update
-      - echo 22222222pendencies...
-      # Headless Chrome
-      # - apt-get install -y fonts-liberation libasound2 libnspr4 libnss3 libx11-xcb1 xdg-utils libxss1 libappindicator1 libindicator7
-      # - wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-      # - dpkg -i google-chrome*.deb
+    runtime-versions:
+      nodejs: 10
   pre_build:
     commands:
+      - echo Installing source NPM dependencies...
       - npm install
+      - npm install -g @angular/cli
   build:
     commands:
-      - npm run build:ci
-      - npm run test:ci
+      - echo Build started on `date`
+      - ng build --prod --aot
   post_build:
-    commands:
-      - aws s3 sync ./dist/angular-devops s3://angular-devops-production --acl 'public-read' --delete
-
+     commands:
+      - aws s3 cp dist s3://${S3_BUCKET} --recursive
+      - echo Build completed on `date`
+artifacts:
+  files:
+      - '**/*'
+  base-directory: 'dist*'
+  discard-paths: yes
